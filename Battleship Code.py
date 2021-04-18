@@ -1,7 +1,11 @@
 #here we go
 
+#NOTE - Alt + Esc to exit program
+
 import pygame
 from tkinter import *
+import RPi.GPIO as GPIO
+from time import sleep
 
 class Game(Frame):
     #class variables
@@ -13,13 +17,9 @@ class Game(Frame):
     def setupGUI(self):
 
         #setup display
-        #self.display = Label(self, height=1, width=WIDTH, background="white")
-        #self.display.grid(row=0, column=0, columnspan=10)
-
-        #setup the 2 grids and gaps in between
         
         #top gap
-        self.top = Label(self, height=1, width=100, background="white")
+        self.top = Label(self, height=2, width=100, background="white")
         self.top.grid(row=0, column=0, columnspan=19)
         
         #left gap
@@ -57,14 +57,34 @@ class Game(Frame):
         #display it all once done
         self.pack(fill=BOTH, expand=1)
 
-        
-        
 
+    #make a square blue
+    def blue(self, x, y):
+        img = PhotoImage(file="gamefiles/blue.gif")
+        self.label = Label(self, image=img, background="black")
+        self.label.image = img
+        self.label.grid(row=y, column=x, sticky = NSEW)
+        
+    #make a square green
+    def green(self, x, y):
+        img = PhotoImage(file="gamefiles/green.gif")
+        self.label = Label(self, image=img, background="black")
+        self.label.image = img
+        self.label.grid(row=y, column=x, sticky = NSEW)
+
+        
         
 ###MAIN CODE###
 #default screen size
 WIDTH = 765
 HEIGHT = 450
+
+#setup switches and sounds
+joystick = [18, 19, 20, 21]
+
+#setup the GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(joystick, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
 #initialize the window        
 window = Tk()
@@ -79,6 +99,62 @@ pygame.init()
 b1 = Game(window)
 b1.setupGUI()
 
+#make an initial square to make green
+currentx = 4
+currenty = 4
+b1.green(currentx, currenty)
+
 #render the GUI in the main loop
-window.mainloop()
+#window.mainloop()
+window.update_idletasks() #same as mainloop but allows frame to update
+window.update()
+
+
+
+###LOOP OF GAME###
+while True:
+
+    #test if the joystick is being moved any direction and go that direction
+    pressed = False
+    while (not pressed):      
+        for i in range(len(joystick)):
+            while (GPIO.input(joystick[i]) == True):
+                direction = i
+                pressed = True
+
+    if (direction == 0): #UP
+        if (currenty != 1):
+            b1.blue(currentx, currenty) #change the previous square to blue
+            currentx += 0
+            currenty += -1
+            b1.green(currentx, currenty) #change the new square to green
+
+    if (direction == 1): #DOWN
+        if (currenty != 8):
+            b1.blue(currentx, currenty)
+            currentx += 0
+            currenty += 1
+            b1.green(currentx, currenty)
+
+    if (direction == 2): #LEFT
+        if (currentx != 1):
+            b1.blue(currentx, currenty)
+            currentx += -1
+            currenty += 0
+            b1.green(currentx, currenty)
+
+    if (direction == 3): #RIGHT
+        if (currentx != 8):
+            b1.blue(currentx, currenty)
+            currentx += 1
+            currenty += 0
+            b1.green(currentx, currenty)
+
+    window.update_idletasks()
+    window.update()
+
+    sleep(0.2) #a little gap so it doesn't read the same direction multiple times
+
+
+    
 
