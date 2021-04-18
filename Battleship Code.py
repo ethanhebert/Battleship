@@ -7,7 +7,8 @@ class Game(Frame):
     #class variables
     
     def __init__(self, container):
-        Frame.__init__(self, container)
+        Frame.__init__(self, container, bg="white")
+        container.attributes("-fullscreen", True)
 
     def setupGUI(self):
 
@@ -18,11 +19,11 @@ class Game(Frame):
         #setup the 2 grids and gaps in between
         
         #top gap
-        self.top = Label(self, height=1, width=100, background="light gray")
+        self.top = Label(self, height=1, width=100, background="white")
         self.top.grid(row=0, column=0, columnspan=19)
         
         #left gap
-        self.left = Label(self, height=1, width=2, background="light gray")
+        self.left = Label(self, height=1, width=2, background="white")
         self.left.grid(row=1, column=0, rowspan=10)
         
         #left grid
@@ -34,7 +35,7 @@ class Game(Frame):
                 self.label.grid(row=1+i, column=j+1, sticky = NSEW)
 
         #middle gap
-        self.mid = Label(self, height=1, width=1, background="light gray")
+        self.mid = Label(self, height=1, width=1, background="white")
         self.mid.grid(row=0, column=9, rowspan=10)
 
         #right grid
@@ -46,11 +47,11 @@ class Game(Frame):
                 self.label.grid(row=1+i, column=10+j, sticky = NSEW)
 
         #right gap
-        self.right = Label(self, height=1, width=2, background="light gray")
+        self.right = Label(self, height=1, width=2, background="white")
         self.right.grid(row=1, column=18, rowspan=10)
 
         #bottom gap
-        self.bottom = Label(self,  width=100, background="light gray")
+        self.bottom = Label(self,  width=100, background="white")
         self.bottom.grid(row=9, column=0, columnspan=19)
 
         #display it all once done
