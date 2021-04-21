@@ -160,8 +160,17 @@ class Game(Frame):
 WIDTH = 765
 HEIGHT = 450
 
+#initialize pygame
+pygame.init()
+
 #setup switches and sounds
 joystick = [18, 19, 20, 21]
+sounds = [
+        pygame.mixer.Sound("gamefiles/battleshiptitle.wav"),
+        pygame.mixer.Sound("gamefiles/suge.wav")
+         ]
+
+sounds[0].set_volume(0.5)
 
 #setup the GPIO
 GPIO.setmode(GPIO.BCM)
@@ -176,9 +185,6 @@ window.geometry("{}x{}".format(WIDTH, HEIGHT))
 window.title("Battleship")
 window.configure(background="light gray")
 
-#initialize pygame
-pygame.init()
-
 #create an instance of the game
 b1 = Game(window)
 b1.setupGUI()
@@ -187,6 +193,9 @@ b1.setupGUI()
 currentx = 4
 currenty = 4
 b1.green(currentx, currenty)
+
+#start the title music
+sounds[0].play(loops=-1)
 
 #render the GUI in the main loop
 #window.mainloop()
