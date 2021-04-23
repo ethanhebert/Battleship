@@ -33,17 +33,17 @@ class Game(Frame):
             for j in range(0,8):
                 #j is x, i is y
 
-                
+                """
                 location = str(j+1) + str(i+1)
                 squareStatus[location] = "blue"
                 img = PhotoImage(file="gamefiles/blue.gif")
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=1+i, column=j+1, sticky = NSEW)
-                
+                """
                 
                 #TEST - makes a random board layout for testing functionality
-                """
+                
                 crazy = randint(1,3)
                 if (crazy == 1):
                     location = str(j+1) + str(i+1)
@@ -68,7 +68,7 @@ class Game(Frame):
                     self.label = Label(self, image=img, background="black")
                     self.label.image = img
                     self.label.grid(row=1+i, column=j+1, sticky = NSEW)
-                """
+                
                 
 
         #middle gap
@@ -161,24 +161,66 @@ def titlescreen():
 
     if (titleStatus == 0):
         
-        title.attributes("-fullscreen", True)
+        title.attributes("-fullscreen", True) #fullscreen, no cursor
+        title.config(cursor="none")
 
-        title_label = Label(title, text="BATTLESHIP", font=("Helvetica", 18))
-        title_label.pack()
+        img = PhotoImage(file="gamefiles/titleNormal.png")
+        title_label = Label(title, image=img, background="black")
+        title_label.image = img
+        title_label.grid(row=0, column=0, sticky = NSEW)
 
     title.update_idletasks() #same as mainloop but allows frame to update
     title.update()
 
-    #start the title music
+    #start title music
     sounds[0].play(loops=-1)
+    
+    #title screen easter egg
+    easter = 1
 
     #have to let go of blue button then press it for it to start (no holding button)
     while True:
         if (GPIO.input(buttons[0]) == False):
             sleep(0.05)
+            
             while True:
+                if ((GPIO.input(buttons[1]) == True) and (GPIO.input(buttons[2]) == True)):
+                    if (easter == 0):
+                        sounds[1].stop()
+                        sounds[0].play(loops=-1)
+                        
+                        img = PhotoImage(file="gamefiles/titleNormal.png")
+                        title_label = Label(title, image=img, background="black")
+                        title_label.image = img
+                        title_label.grid(row=0, column=0, sticky = NSEW)
+
+                        title.update_idletasks()
+                        title.update()
+
+                        easter = 1
+                        
+                    elif (easter == 1):
+                        sounds[0].stop()
+                        sounds[1].play(loops=-1)
+
+                        img = PhotoImage(file="gamefiles/titleEaster.png")
+                        title_label = Label(title, image=img, background="black")
+                        title_label.image = img
+                        title_label.grid(row=0, column=0, sticky = NSEW)
+
+                        title.update_idletasks()
+                        title.update()
+                        
+                        easter = 0
+                        
+                    while True:
+                        if ((GPIO.input(buttons[1]) == 0) and (GPIO.input(buttons[2]) == 0)):
+                            break
+                        
                 if (GPIO.input(buttons[0]) == True):
                     sounds[0].stop()
+                    sounds[1].stop()
+                    sounds[7].play()
                     #title.destroy()
                     break
             break
@@ -201,11 +243,12 @@ def gameloop():
 
     #make the game window appear now
     window = Toplevel(title)
+    window.config(cursor="none")
     b1 = Game(window)
     b1.setupGUI()
     
     #start an in-game song
-    sounds[1].play(loops=-1)
+    sounds[10].play(loops=-1)
 
     #make an initial square to make green
     currentx = 4
@@ -240,7 +283,8 @@ def gameloop():
                         pressed = True
 
                 if (GPIO.input(buttons[0]) == True):
-                    sounds[1].stop()
+                    sounds[10].stop()
+                    sounds[7].stop()
                     sleep(0.5)
                     titleStatus = 1
                     window.destroy()
@@ -248,6 +292,7 @@ def gameloop():
 
             if (direction == 3): #UP
                 if (currenty != 1):
+                    sounds[3].play()
                     b1.blue(currentx, currenty) #change the previous square to blue
                     currentx += 0
                     currenty += -1
@@ -255,6 +300,7 @@ def gameloop():
 
             if (direction == 2): #DOWN
                 if (currenty != 8):
+                    sounds[3].play()
                     b1.blue(currentx, currenty)
                     currentx += 0
                     currenty += 1
@@ -262,6 +308,7 @@ def gameloop():
 
             if (direction == 1): #LEFT
                 if (currentx != 1):
+                    sounds[3].play()
                     b1.blue(currentx, currenty)
                     currentx += -1
                     currenty += 0
@@ -269,6 +316,7 @@ def gameloop():
 
             if (direction == 0): #RIGHT
                 if (currentx != 8):
+                    sounds[3].play()
                     b1.blue(currentx, currenty)
                     currentx += 1
                     currenty += 0
@@ -281,18 +329,34 @@ def gameloop():
         
 ###MAIN CODE###
 
-#initialize pygame
+#initialize the mixer and pygame
+pygame.mixer.pre_init(frequency=44100, size=-16, channels=1, buffer=512)
 pygame.init()
 
+            
 #setup switches and sounds
 joystick = [18, 19, 20, 21]
-buttons = [25]
+buttons = [25, 26, 27]
 sounds = [
         pygame.mixer.Sound("gamefiles/battleshiptitle.wav"),
-        pygame.mixer.Sound("gamefiles/suge.wav")
+        pygame.mixer.Sound("gamefiles/suge.wav"),
+        pygame.mixer.Sound("gamefiles/victory.wav"),
+        pygame.mixer.Sound("gamefiles/move.wav"),
+        pygame.mixer.Sound("gamefiles/select.wav"),
+        pygame.mixer.Sound("gamefiles/error.wav"),
+        pygame.mixer.Sound("gamefiles/dropship.wav"),
+        pygame.mixer.Sound("gamefiles/horn.wav"),
+        pygame.mixer.Sound("gamefiles/hitsound.wav"),
+        pygame.mixer.Sound("gamefiles/misssound.wav"),
+        pygame.mixer.Sound("gamefiles/waves.wav"),
+        pygame.mixer.Sound("gamefiles/yousunkmybattleship.wav")
          ]
 
-sounds[0].set_volume(0.5)
+#chnage any volumes of tracks (0-1)
+sounds[0].set_volume(0.8)
+sounds[10].set_volume(0.5)
+sounds[3].set_volume(0.7)
+sounds[1].set_volume(1)
 
 #setup the GPIO
 GPIO.setmode(GPIO.BCM)
