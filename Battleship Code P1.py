@@ -93,7 +93,7 @@ class Game(Frame):
 
         #bottom gap with instructions
         self.bottom = Label(self,  width=50, background="white",text="", \
-                            fg="red", font=("Arial", 20), anchor=CENTER, height=1)
+                            fg="red", font=("Arial", 20, "bold"), anchor=CENTER, height=2)
         self.bottom.grid(row=9, column=0, columnspan=19)
 
         #display it all once done
@@ -457,6 +457,7 @@ class Game(Frame):
 def titlescreen():
     global title
     global titleStatus
+    GPIO.output(senders[2], 0)
 
     if (titleStatus == 0):
         
@@ -483,40 +484,57 @@ def titlescreen():
             sleep(0.05)
             
             while True:
-                if ((GPIO.input(buttons[1]) == True) and (GPIO.input(buttons[2]) == True)):
-                    if (easter == 0):
-                        sounds[1].stop()
-                        sounds[0].play(loops=-1)
-                        
-                        img = PhotoImage(file="gamefiles/titleNormal.png")
-                        title_label = Label(title, image=img, background="black")
-                        title_label.image = img
-                        title_label.grid(row=0, column=0, sticky = NSEW)
+                GPIO.output(senders[2], 0)
+                
+                #if you and other player do cheat code
+                if ((GPIO.input(buttons[1]) == True) and (GPIO.input(buttons[2]) == True) \
+                    and (GPIO.input(receivers[2]) == True)):
 
-                        title.update_idletasks()
-                        title.update()
+                        #communication with other player
+                        GPIO.output(senders[2], 1)
 
-                        easter = 1
+                        while True:
+                            if (GPIO.input(receivers[1]) == True):
+                                break
                         
-                    elif (easter == 1):
-                        sounds[0].stop()
-                        sounds[1].play(loops=-1)
+                        if (easter == 0):
+                            sounds[1].stop()
+                            sounds[0].play(loops=-1)
+                            
+                            img = PhotoImage(file="gamefiles/titleNormal.png")
+                            title_label = Label(title, image=img, background="black")
+                            title_label.image = img
+                            title_label.grid(row=0, column=0, sticky = NSEW)
 
-                        img = PhotoImage(file="gamefiles/titleEaster.png")
-                        title_label = Label(title, image=img, background="black")
-                        title_label.image = img
-                        title_label.grid(row=0, column=0, sticky = NSEW)
+                            title.update_idletasks()
+                            title.update()
 
-                        title.update_idletasks()
-                        title.update()
+                            easter = 1
+                            
+                        elif (easter == 1):
+                            sounds[0].stop()
+                            sounds[1].play(loops=-1)
+
+                            img = PhotoImage(file="gamefiles/titleEaster.png")
+                            title_label = Label(title, image=img, background="black")
+                            title_label.image = img
+                            title_label.grid(row=0, column=0, sticky = NSEW)
+
+                            title.update_idletasks()
+                            title.update()
+                            
+                            easter = 0
+                            
+                        while True:
+                            if ((GPIO.input(buttons[1]) == 0) and (GPIO.input(buttons[2]) == 0)):
+                                GPIO.output(senders[2], 0)
+                                sleep(0.5)
+                                break
+                    
                         
-                        easter = 0
-                        
-                    while True:
-                        if ((GPIO.input(buttons[1]) == 0) and (GPIO.input(buttons[2]) == 0)):
-                            break
-                        
+                #blue button    
                 if (GPIO.input(buttons[0]) == True):
+                    GPIO.output(senders[2], 0)
                     sounds[0].stop()
                     sounds[1].stop()
                     sounds[7].play()
