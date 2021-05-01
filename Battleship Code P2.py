@@ -384,6 +384,8 @@ class Game(Frame):
 
     #this function displays if your ships have been hit or not
     def updateShips(self, p2shotsTaken):
+        global p2totalScore
+        
         for x in range(10, 18):
             for y in range(1, 9):
                 location = str(x) + str(y)
@@ -396,6 +398,7 @@ class Game(Frame):
                         self.label = Label(self, image=img, background="black")
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
+                        p2totalScore += 1
 
                     if (squareStatus[location] == "grayvert"):
                         squareStatus[location] = "grayverthit"
@@ -403,6 +406,7 @@ class Game(Frame):
                         self.label = Label(self, image=img, background="black")
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
+                        p2totalScore += 1
 
                     if (squareStatus[location] == "grayleft"):
                         squareStatus[location] = "graylefthit"
@@ -410,6 +414,7 @@ class Game(Frame):
                         self.label = Label(self, image=img, background="black")
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
+                        p2totalScore += 1
 
                     if (squareStatus[location] == "grayright"):
                         squareStatus[location] = "grayrighthit"
@@ -417,6 +422,7 @@ class Game(Frame):
                         self.label = Label(self, image=img, background="black")
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
+                        p2totalScore += 1
 
                     if (squareStatus[location] == "grayup"):
                         squareStatus[location] = "grayuphit"
@@ -424,6 +430,7 @@ class Game(Frame):
                         self.label = Label(self, image=img, background="black")
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
+                        p2totalScore += 1
 
                     if (squareStatus[location] == "graydown"):
                         squareStatus[location] = "graydownhit"
@@ -431,6 +438,7 @@ class Game(Frame):
                         self.label = Label(self, image=img, background="black")
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
+                        p2totalScore += 1
 
                     if (squareStatus[location] == "blue"):
                         squareStatus[location] = "bluemiss"
@@ -439,6 +447,8 @@ class Game(Frame):
                         self.label.image = img
                         self.label.grid(row=y, column=x, sticky = NSEW)
 
+        print("Other player's score:")
+        print(p2totalScore)
         self.update_idletasks()
         self.update()
 
@@ -462,7 +472,7 @@ def titlescreen():
     title.update()
 
     #start title music
-    sounds[0].play(loops=-1)
+    #sounds[0].play(loops=-1)
     
     #title screen easter egg
     easter = 1
@@ -476,7 +486,7 @@ def titlescreen():
                 if ((GPIO.input(buttons[1]) == True) and (GPIO.input(buttons[2]) == True)):
                     if (easter == 0):
                         sounds[1].stop()
-                        sounds[0].play(loops=-1)
+                        #sounds[0].play(loops=-1)
                         
                         img = PhotoImage(file="gamefiles/titleNormal.png")
                         title_label = Label(title, image=img, background="black")
@@ -490,7 +500,7 @@ def titlescreen():
                         
                     elif (easter == 1):
                         sounds[0].stop()
-                        sounds[1].play(loops=-1)
+                        #sounds[1].play(loops=-1)
 
                         img = PhotoImage(file="gamefiles/titleEaster.png")
                         title_label = Label(title, image=img, background="black")
@@ -509,7 +519,7 @@ def titlescreen():
                 if (GPIO.input(buttons[0]) == True):
                     sounds[0].stop()
                     sounds[1].stop()
-                    sounds[7].play()
+                    #sounds[7].play()
                     #title.destroy()
                     break
             break
@@ -589,7 +599,7 @@ def gameloop():
     b1.setupGUI()
     
     #start an in-game song
-    sounds[10].play(loops=-1)
+    #sounds[10].play(loops=-1)
 
     #render the GUI in the main loop
     #window.mainloop()
@@ -998,6 +1008,22 @@ def gameloop():
                 window.destroy()
                 gameloop()
 
+        #check if game is over
+        if (totalScore == 15):
+            sleep(1)
+            b1.displayText("YOU WIN")
+            sounds[10].stop()
+            #sounds[2].play(loops=-1)
+            break
+
+        if (p2totalScore == 15):
+            sleep(1)
+            b1.displayText("YOU LOSE")
+            sounds[10].stop()
+            #sounds[2].play(loops=-1)
+            break
+
+                
         b1.displayText("Fire at Player 1")
         #test if the joystick is being moved any direction and go that direction
         #joystick is normally 1 and turns to 0 if pressed that direction
@@ -1110,19 +1136,38 @@ def gameloop():
 
             GPIO.output(senders[1], 0)
             GPIO.output(senders[2], 0)
+
+            #check if game is over
+            if (totalScore == 15):
+                sleep(1)
+                b1.displayText("YOU WIN")
+                sounds[10].stop()
+                #sounds[2].play(loops=-1)
+                break
+
+            if (p2totalScore == 15):
+                sleep(1)
+                b1.displayText("YOU LOSE")
+                sounds[10].stop()
+                #sounds[2].play(loops=-1)
+                break
             
             if (myTurn == 0):
                 b1.displayText("Waiting for Player 1...")
 
-            #check if game is over
-            if (totalScore == 15):
-                b1.displayText("YOU WIN")
-                break
+            
 
-            if (p2totalScore == 15):
-                b1.displayText("YOU LOSE")
-                break
-        
+    #end game screen
+    while True:
+        #blue escape button
+        if (GPIO.input(buttons[0]) == True):
+            sounds[10].stop()
+            sounds[7].stop()
+            sounds[2].stop()
+            sleep(0.5)
+            titleStatus = 1
+            window.destroy()
+            gameloop()
 
 
         
