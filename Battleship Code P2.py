@@ -93,7 +93,7 @@ class Game(Frame):
 
         #bottom gap with instructions
         self.bottom = Label(self,  width=50, background="white", text="", \
-                            fg="red", font=("Arial", 20), anchor=CENTER, height=1)
+                            fg="red", font=("Arial", 20, "bold"), anchor=CENTER, height=2)
         self.bottom.grid(row=9, column=0, columnspan=19)
 
         #display it all once done
@@ -457,6 +457,7 @@ class Game(Frame):
 def titlescreen():
     global title
     global titleStatus
+    GPIO.output(senders[2], 0)
 
     if (titleStatus == 0):
         
@@ -483,7 +484,20 @@ def titlescreen():
             sleep(0.05)
             
             while True:
+                GPIO.output(senders[2], 0)
+                GPIO.output(senders[1], 0)
+
+                #tell other player you've pressed both buttons
                 if ((GPIO.input(buttons[1]) == True) and (GPIO.input(buttons[2]) == True)):
+                    GPIO.output(senders[2], 1)
+                    sleep(0.2)
+                    GPIO.output(senders[2], 0)
+
+                #player 1 telling you to switch screen
+                if (GPIO.input(receivers[2]) == True):
+
+                    GPIO.output(senders[1], 1)
+                    
                     if (easter == 0):
                         sounds[1].stop()
                         #sounds[0].play(loops=-1)
@@ -513,10 +527,16 @@ def titlescreen():
                         easter = 0
                         
                     while True:
-                        if ((GPIO.input(buttons[1]) == 0) and (GPIO.input(buttons[2]) == 0)):
+                        if ((GPIO.input(buttons[1]) == 0) and (GPIO.input(buttons[2]) == 0) \
+                            and (GPIO.input(receivers[2]) == 0)):
+                            GPIO.output(senders[2], 0)
+                            GPIO.output(senders[2], 0)
+                            #sleep(0.5)
                             break
-                        
+
+                #blue button
                 if (GPIO.input(buttons[0]) == True):
+                    GPIO.output(senders[2], 0)
                     sounds[0].stop()
                     sounds[1].stop()
                     #sounds[7].play()
