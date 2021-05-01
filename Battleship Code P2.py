@@ -352,7 +352,98 @@ class Game(Frame):
         self.bottom["text"] = newText
         self.update_idletasks()
         self.update()
+
+    #this function controls firing at the other player
+    def fire(self, x, y):
+        location = str(x) + str(y)
+        shotsTaken[location] = 1
+
+        if (p2shipPresence[location] == 0): #MISS
+            sounds[9].play()
+            sleep(3.75)
+            squareStatus[location] = "greenmiss"
+            img = PhotoImage(file="gamefiles/greenmiss.gif")
+            self.label = Label(self, image=img, background="black")
+            self.label.image = img
+            self.label.grid(row=y, column=x, sticky = NSEW)
+
         
+        elif (p2shipPresence[location] == 1): #HIT
+            global totalScore
+            totalScore += 1
+            sounds[8].play()
+            sleep(3.75)
+            squareStatus[location] = "greenhit"
+            img = PhotoImage(file="gamefiles/greenhit.gif")
+            self.label = Label(self, image=img, background="black")
+            self.label.image = img
+            self.label.grid(row=y, column=x, sticky = NSEW)
+            
+        self.update_idletasks()
+        self.update()
+
+    #this function displays if your ships have been hit or not
+    def updateShips(self, p2shotsTaken):
+        for x in range(10, 18):
+            for y in range(1, 9):
+                location = str(x) + str(y)
+
+                if (p2shotsTaken[location] == 1):
+                    
+                    if (squareStatus[location] == "grayhor"):
+                        squareStatus[location] = "grayhorhit"
+                        img = PhotoImage(file="gamefiles/grayhorhit.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+                    if (squareStatus[location] == "grayvert"):
+                        squareStatus[location] = "grayverthit"
+                        img = PhotoImage(file="gamefiles/grayverthit.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+                    if (squareStatus[location] == "grayleft"):
+                        squareStatus[location] = "graylefthit"
+                        img = PhotoImage(file="gamefiles/graylefthit.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+                    if (squareStatus[location] == "grayright"):
+                        squareStatus[location] = "grayrighthit"
+                        img = PhotoImage(file="gamefiles/grayrighthit.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+                    if (squareStatus[location] == "grayup"):
+                        squareStatus[location] = "grayuphit"
+                        img = PhotoImage(file="gamefiles/grayuphit.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+                    if (squareStatus[location] == "graydown"):
+                        squareStatus[location] = "graydownhit"
+                        img = PhotoImage(file="gamefiles/graydownhit.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+                    if (squareStatus[location] == "blue"):
+                        squareStatus[location] = "bluemiss"
+                        img = PhotoImage(file="gamefiles/bluemiss.gif")
+                        self.label = Label(self, image=img, background="black")
+                        self.label.image = img
+                        self.label.grid(row=y, column=x, sticky = NSEW)
+
+        self.update_idletasks()
+        self.update()
+
+   
+
 def titlescreen():
     global title
     global titleStatus
@@ -439,6 +530,14 @@ def gameloop():
     global titleStatus
     global shipCount
     global myTurn
+    global totalScore
+    global p2totalScore
+    global shotsTaken
+    global p2shotsTaken
+
+    #scores start at 0
+    totalScore = 0
+    p2totalScore = 0
 
     #player 2 - goes second
     myTurn = 0
@@ -455,10 +554,24 @@ def gameloop():
 
     #tracks the other player's ships
     p2shipPresence = {}
-    for x in range(10, 18):
+    for x in range(1, 9):
         for y in range(1, 9):
             location = str(x) + str(y)
             p2shipPresence[location] = 0
+
+    #keeps track of where you've already shot to prevent repeats
+    shotsTaken = {}
+    for x in range(1, 9):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            shotsTaken[location] = 0
+
+    #keeps track of where the other player has shot
+    p2shotsTaken = {}
+    for x in range(10, 18):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            p2shotsTaken[location] = 0
 
     #start with all senders off
     GPIO.output(senders[0], 0)
@@ -757,10 +870,58 @@ def gameloop():
                 #print(shipPresence) # - ditto
                 break
 
+    #exchange ship data with other player (sender)
+    GPIO.output(senders[1], 0)
+    GPIO.output(senders[2], 0)
+    for x in range(10, 18):
+        for y in range(1, 9):
+            
+            myLocation = str(x) + str(y)
+            theirLocation = str(x-9) + str(y)
+            while True:
+                if ((GPIO.input(receivers[1]) == False) and (GPIO.input(receivers[2]) == False)):
+                    break
+            
+            if (shipPresence[myLocation] == 0): #you have no ship
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (shipPresence[myLocation] == 1): #you have ship
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+
+
+            while True:
+                if (GPIO.input(receivers[1]) == True): #they have no ship
+                    p2shipPresence[theirLocation] = 0
+                    GPIO.output(senders[1], 0)
+                    GPIO.output(senders[2], 0)
+                    break
+
+                elif (GPIO.input(receivers[2]) == True): #they have ship
+                    p2shipPresence[theirLocation] = 1
+                    GPIO.output(senders[1], 0)
+                    GPIO.output(senders[2], 0)
+                    break
+
+    #tell p1 to go to next game phase
+    GPIO.output(senders[1], 1)
+    sleep(0.05)
+    GPIO.output(senders[1], 0)
+
+    GPIO.output(senders[1], 0)
+    GPIO.output(senders[2], 0)
+
+    print("My ships:")
+    print(shipPresence)
+    print()
+    print("Their ships:")
+    print(p2shipPresence)
+            
 
 
 
-    ###LEFT GRID###
+
+    ###LEFT GRID#########################################################################
 
     #make an initial square to make green
     currentx = 4
@@ -769,14 +930,64 @@ def gameloop():
     window.update_idletasks()
     window.update()
 
+    #Player 2 goes second
+    myTurn = 0
+
+    GPIO.output(senders[0], 0)
+
     while True:
+        GPIO.output(senders[1], 0)
+        GPIO.output(senders[2], 0)
 
         while True:
             if (myTurn == 1):
                 break
             
-            if (GPIO.input(receivers[0]) == True):
-                myTurn = 1
+            #receive data set to see where other player fired###########################
+            for x in range(10, 18):
+                for y in range(1, 9):
+                    location = str(x) + str(y)
+                    GPIO.output(senders[1], 0)
+                    
+                    while True:
+                        print("Waiting...")
+                        if (GPIO.input(receivers[1]) == True): #they haven't shot there
+                            p2shotsTaken[location] = 0
+                            break
+                        elif (GPIO.input(receivers[2]) == True): #they have shot there
+                            p2shotsTaken[location] = 1
+                            break
+
+                        #blue escape button
+                        if (GPIO.input(buttons[0]) == True):
+                            sounds[10].stop()
+                            sounds[7].stop()
+                            sleep(0.5)
+                            titleStatus = 1
+                            window.destroy()
+                            gameloop()
+
+                    GPIO.output(senders[1], 1)
+                    sleep(0.02)
+                    
+            print("Got out")
+            
+            #wait for p1 to move on from data transfer
+            while True:
+                if (GPIO.input(receivers[0]) == True):
+                    GPIO.output(senders[1], 0)
+                    GPIO.output(senders[2], 0)
+                    break
+
+            b1.updateShips(p2shotsTaken)
+
+            print()
+            print("Their shots:")
+            print(p2shotsTaken)
+            print("Data received")
+            #sleep(3)
+            myTurn = 1
+#########################################################################################
 
             #blue escape button
             if (GPIO.input(buttons[0]) == True):
@@ -787,13 +998,15 @@ def gameloop():
                 window.destroy()
                 gameloop()
 
+        b1.displayText("Fire at Player 1")
         #test if the joystick is being moved any direction and go that direction
         #joystick is normally 1 and turns to 0 if pressed that direction
         #up is the direction of the wires on the joystick
         pressed = False
         direction = 4
         if ((GPIO.input(joystick[0]) == True) and (GPIO.input(joystick[1]) == True) \
-            and (GPIO.input(joystick[2]) == True) and (GPIO.input(joystick[3]) == True)):
+            and (GPIO.input(joystick[2]) == True) and (GPIO.input(joystick[3]) == True) \
+            and (GPIO.input(buttons[1]) == False)):
             sleep(0.05) #this section ensures it doesn't move 2 in one direction
             
             while (not pressed):      
@@ -802,6 +1015,7 @@ def gameloop():
                         direction = i
                         pressed = True
 
+                #blue escape button
                 if (GPIO.input(buttons[0]) == True):
                     sounds[10].stop()
                     sounds[7].stop()
@@ -809,6 +1023,55 @@ def gameloop():
                     titleStatus = 1
                     window.destroy()
                     gameloop()
+
+                #red fire button############################################################
+                if (GPIO.input(buttons[1]) == True):
+                    location = str(currentx) + str(currenty)
+                    
+                    if (shotsTaken[location] == 1): #can't shoot same place twice
+                        sounds[5].play()
+                    else:
+                        b1.fire(currentx, currenty)
+   
+                        #send data set of where you fired to other player
+                        print("Now sending data...")
+                        for x in range(1, 9):
+                            for y in range(1, 9):
+                                location = str(x) + str(y)
+                                print(location)
+                                
+                                while True:
+                                    if (GPIO.input(receivers[1]) == False):
+                                        break
+                                print("Receiver off")
+                                
+                                if (shotsTaken[location] == 0): #you haven't shot there
+                                    GPIO.output(senders[1], 1)
+                                    GPIO.output(senders[2], 0)
+                                elif (shotsTaken[location] == 1): #you've shot there
+                                    GPIO.output(senders[1], 0)
+                                    GPIO.output(senders[2], 1)
+
+                                while True:
+                                    if (GPIO.input(receivers[1]) == True):
+                                        GPIO.output(senders[1], 0)
+                                        GPIO.output(senders[2], 0)
+                                        break
+
+                        print("Data sent.")
+                        #move on from the data transfer
+                        GPIO.output(senders[0], 1)
+                        sleep(0.5)
+                        GPIO.output(senders[0], 0)
+                        
+
+                        print()
+                        print("My shots:")
+                        print(shotsTaken)
+                        
+                        pressed = True
+                        myTurn = 0
+#########################################################################################                 
 
             if (direction == 3): #UP
                 if (currenty != 1):
@@ -845,7 +1108,20 @@ def gameloop():
             window.update_idletasks()
             window.update()
 
-            GPIO.output(senders[0], 0)
+            GPIO.output(senders[1], 0)
+            GPIO.output(senders[2], 0)
+            
+            if (myTurn == 0):
+                b1.displayText("Waiting for Player 1...")
+
+            #check if game is over
+            if (totalScore == 15):
+                b1.displayText("YOU WIN")
+                break
+
+            if (p2totalScore == 15):
+                b1.displayText("YOU LOSE")
+                break
         
 
 
