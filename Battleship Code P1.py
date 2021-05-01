@@ -535,6 +535,7 @@ def titlescreen():
                 #blue button    
                 if (GPIO.input(buttons[0]) == True):
                     GPIO.output(senders[2], 0)
+                    GPIO.output(senders[1], 0)
                     sounds[0].stop()
                     sounds[1].stop()
                     sounds[7].play()
