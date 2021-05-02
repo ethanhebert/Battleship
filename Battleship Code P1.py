@@ -243,6 +243,26 @@ class Game(Frame):
             self.label.image = img
             self.label.grid(row=y, column=x, sticky = NSEW)
 
+
+    #adds locations to the boat dictionaries for sending data later
+    def addBoat(self, location):
+
+        if (shipCount == 1):
+            boat1[location] = 1
+
+        if (shipCount == 2):
+            boat2[location] = 1
+
+        if (shipCount == 3):
+            boat3[location] = 1
+
+        if (shipCount == 4):
+            boat4[location] = 1
+
+        if (shipCount == 5):
+            boat5[location] = 1
+
+            
         
     def gray(self, x, y, rotation):
         
@@ -255,6 +275,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x-1) + str(y)
                 squareStatus[location] = "greenleft"
@@ -263,6 +284,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x-1, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x+1) + str(y)
                 squareStatus[location] = "greenright"
@@ -271,6 +293,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x+1, sticky = NSEW)
+                self.addBoat(location)
 
             else:
                 location = str(x) + str(y)
@@ -280,6 +303,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x-1) + str(y)
                 squareStatus[location] = "grayleft"
@@ -288,6 +312,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x-1, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x+1) + str(y)
                 squareStatus[location] = "grayright"
@@ -296,6 +321,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x+1, sticky = NSEW)
+                self.addBoat(location)
 
         if (rotation == 1):
             if (shipCount < 5):
@@ -306,6 +332,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x) + str(y-1)
                 squareStatus[location] = "greenup"
@@ -314,6 +341,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y-1, column=x, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x) + str(y+1)
                 squareStatus[location] = "greendown"
@@ -322,6 +350,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y+1, column=x, sticky = NSEW)
+                self.addBoat(location)
 
             else:
                 location = str(x) + str(y)
@@ -331,6 +360,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y, column=x, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x) + str(y-1)
                 squareStatus[location] = "grayup"
@@ -339,6 +369,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y-1, column=x, sticky = NSEW)
+                self.addBoat(location)
 
                 location = str(x) + str(y+1)
                 squareStatus[location] = "graydown"
@@ -347,6 +378,7 @@ class Game(Frame):
                 self.label = Label(self, image=img, background="black")
                 self.label.image = img
                 self.label.grid(row=y+1, column=x, sticky = NSEW)
+                self.addBoat(location)
 
     #this function controls the instructions on the screen
     def displayText(self, newText):
@@ -563,6 +595,16 @@ def gameloop():
     global p2totalScore
     global shotsTaken
     global p2shotsTaken
+    global boat1
+    global boat2
+    global boat3
+    global boat4
+    global boat5
+    global p2boat1
+    global p2boat2
+    global p2boat3
+    global p2boat4
+    global p2boat5
 
     #scores start at 0
     totalScore = 0
@@ -602,6 +644,68 @@ def gameloop():
             location = str(x) + str(y)
             p2shotsTaken[location] = 0
 
+
+    #where my boats are
+    boat1 = {}
+    for x in range(10, 18):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            boat1[location] = 0
+
+    boat2 = {}
+    for x in range(10, 18):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            boat2[location] = 0
+
+    boat3 = {}
+    for x in range(10, 18):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            boat3[location] = 0
+
+    boat4 = {}
+    for x in range(10, 18):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            boat4[location] = 0
+
+    boat5 = {}
+    for x in range(10, 18):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            boat5[location] = 0
+
+    #where their boats are
+    p2boat1 = {}
+    for x in range(1, 9):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            p2boat1[location] = 0
+
+    p2boat2 = {}
+    for x in range(1, 9):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            p2boat2[location] = 0
+
+    p2boat3 = {}
+    for x in range(1, 9):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            p2boat3[location] = 0
+
+    p2boat4 = {}
+    for x in range(1, 9):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            p2boat4[location] = 0
+
+    p2boat5 = {}
+    for x in range(1, 9):
+        for y in range(1, 9):
+            location = str(x) + str(y)
+            p2boat5[location] = 0
             
 
     #start with all senders off
@@ -922,6 +1026,124 @@ def gameloop():
                 GPIO.output(senders[2], 1)
             sleep(0.02)
 
+
+    #receive each individual boat data
+    for x in range(10, 18):
+        for y in range(1, 9):
+            myLocation = str(x) + str(y)
+            theirLocation = str(x-9) + str(y)
+            GPIO.output(senders[1], 0)
+            GPIO.output(senders[2], 0)
+            
+            while True:
+                if (GPIO.input(receivers[1]) == True): #they have no ship
+                    p2boat1[theirLocation] = 0
+                    break
+                elif (GPIO.input(receivers[2]) == True): #they have ship
+                    p2boat1[theirLocation] = 1
+                    break
+
+            if (boat1[myLocation] == 0): #you have no ship
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (boat1[myLocation] == 1): #you have ship
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+            sleep(0.02)
+
+    for x in range(10, 18):
+        for y in range(1, 9):
+            myLocation = str(x) + str(y)
+            theirLocation = str(x-9) + str(y)
+            GPIO.output(senders[1], 0)
+            GPIO.output(senders[2], 0)
+            
+            while True:
+                if (GPIO.input(receivers[1]) == True): #they have no ship
+                    p2boat2[theirLocation] = 0
+                    break
+                elif (GPIO.input(receivers[2]) == True): #they have ship
+                    p2boat2[theirLocation] = 1
+                    break
+
+            if (boat2[myLocation] == 0): #you have no ship
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (boat2[myLocation] == 1): #you have ship
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+            sleep(0.02)
+
+    for x in range(10, 18):
+        for y in range(1, 9):
+            myLocation = str(x) + str(y)
+            theirLocation = str(x-9) + str(y)
+            GPIO.output(senders[1], 0)
+            GPIO.output(senders[2], 0)
+            
+            while True:
+                if (GPIO.input(receivers[1]) == True): #they have no ship
+                    p2boat3[theirLocation] = 0
+                    break
+                elif (GPIO.input(receivers[2]) == True): #they have ship
+                    p2boat3[theirLocation] = 1
+                    break
+
+            if (boat3[myLocation] == 0): #you have no ship
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (boat3[myLocation] == 1): #you have ship
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+            sleep(0.02)
+
+    for x in range(10, 18):
+        for y in range(1, 9):
+            myLocation = str(x) + str(y)
+            theirLocation = str(x-9) + str(y)
+            GPIO.output(senders[1], 0)
+            GPIO.output(senders[2], 0)
+            
+            while True:
+                if (GPIO.input(receivers[1]) == True): #they have no ship
+                    p2boat4[theirLocation] = 0
+                    break
+                elif (GPIO.input(receivers[2]) == True): #they have ship
+                    p2boat4[theirLocation] = 1
+                    break
+
+            if (boat4[myLocation] == 0): #you have no ship
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (boat4[myLocation] == 1): #you have ship
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+            sleep(0.02)
+
+    for x in range(10, 18):
+        for y in range(1, 9):
+            myLocation = str(x) + str(y)
+            theirLocation = str(x-9) + str(y)
+            GPIO.output(senders[1], 0)
+            GPIO.output(senders[2], 0)
+            
+            while True:
+                if (GPIO.input(receivers[1]) == True): #they have no ship
+                    p2boat5[theirLocation] = 0
+                    break
+                elif (GPIO.input(receivers[2]) == True): #they have ship
+                    p2boat5[theirLocation] = 1
+                    break
+
+            if (boat5[myLocation] == 0): #you have no ship
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (boat5[myLocation] == 1): #you have ship
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+            sleep(0.02)
+
+
     #wait for p2 to finish before next game phase
     while True:
         if (GPIO.input(receivers[1]) == True):
@@ -929,11 +1151,43 @@ def gameloop():
             GPIO.output(senders[2], 0)
             break
 
+    """
     print("My ships:")
     print(shipPresence)
     print()
     print("Their ships:")
     print(p2shipPresence)
+    print()
+    print("My boat1:")
+    print(boat1)
+    print()
+    print("Their boat1:")
+    print(p2boat1)
+    print()
+    print("My boat2:")
+    print(boat2)
+    print()
+    print("Their boat2:")
+    print(p2boat2)
+    print()
+    print("My boat3:")
+    print(boat3)
+    print()
+    print("Their boat3:")
+    print(p2boat3)
+    print()
+    print("My boat4:")
+    print(boat4)
+    print()
+    print("Their boat4:")
+    print(p2boat4)
+    print()
+    print("My boat5:")
+    print(boat5)
+    print()
+    print("Their boat5:")
+    print(p2boat5)
+    """
 
 
 
