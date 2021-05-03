@@ -10,10 +10,10 @@ from time import sleep
 from random import randint
 
 class Game(Frame):
-    #class variables
+    global bgcolor
     
     def __init__(self, container):
-        Frame.__init__(self, container, bg="white")
+        Frame.__init__(self, container, bg=bgcolor)
         container.attributes("-fullscreen", True)
 
     def setupGUI(self):
@@ -21,11 +21,11 @@ class Game(Frame):
         #setup display
         
         #top gap
-        self.top = Label(self, height=2, width=100, background="white")
+        self.top = Label(self, height=2, width=100, background=bgcolor)
         self.top.grid(row=0, column=0, columnspan=19)
         
         #left gap
-        self.left = Label(self, height=1, width=2, background="white")
+        self.left = Label(self, height=1, width=2, background=bgcolor)
         self.left.grid(row=1, column=0, rowspan=10)
         
         #left grid
@@ -73,7 +73,7 @@ class Game(Frame):
                 
 
         #middle gap
-        self.mid = Label(self, height=1, width=1, background="white")
+        self.mid = Label(self, height=1, width=1, background=bgcolor)
         self.mid.grid(row=0, column=9, rowspan=10)
 
         #right grid
@@ -88,11 +88,11 @@ class Game(Frame):
                 self.label.grid(row=1+i, column=10+j, sticky = NSEW)
 
         #right gap
-        self.right = Label(self, height=1, width=2, background="white")
+        self.right = Label(self, height=1, width=2, background=bgcolor)
         self.right.grid(row=1, column=18, rowspan=10)
 
         #bottom gap with instructions
-        self.bottom = Label(self,  width=50, background="white", text="", \
+        self.bottom = Label(self,  width=50, background=bgcolor, text="", \
                             fg="red", font=("Arial", 20, "bold"), anchor=CENTER, height=2)
         self.bottom.grid(row=9, column=0, columnspan=19)
 
@@ -250,16 +250,16 @@ class Game(Frame):
         if (shipCount == 1):
             boat1[location] = 1
 
-        if (shipCount == 2):
+        elif (shipCount == 2):
             boat2[location] = 1
 
-        if (shipCount == 3):
+        elif (shipCount == 3):
             boat3[location] = 1
 
-        if (shipCount == 4):
+        elif (shipCount == 4):
             boat4[location] = 1
 
-        if (shipCount == 5):
+        elif (shipCount == 5):
             boat5[location] = 1
 
         
@@ -385,6 +385,46 @@ class Game(Frame):
         self.update_idletasks()
         self.update()
 
+    #this function checks which boat you hit
+    def boatCheck(self, location):
+        global boat1score
+        global boat2score
+        global boat3score
+        global boat4score
+        global boat5score
+
+        if (p2boat1[location] == 1):
+            boat1score += 1
+            if (boat1score == 3):
+                sleep(1.5)
+                sounds[11].play()
+
+        elif (p2boat2[location] == 1):
+            boat2score += 1
+            if (boat2score == 3):
+                sleep(1.5)
+                sounds[11].play()
+
+        elif (p2boat3[location] == 1):
+            boat3score += 1
+            if (boat3score == 3):
+                sleep(1.5)
+                sounds[11].play()
+
+        elif (p2boat4[location] == 1):
+            boat4score += 1
+            if (boat4score == 3):
+                sleep(1.5)
+                sounds[11].play()
+
+        elif (p2boat5[location] == 1):
+            boat5score += 1
+            if (boat5score == 3):
+                sleep(1.5)
+                sounds[11].play()
+
+        sleep(1)
+
     #this function controls firing at the other player
     def fire(self, x, y):
         location = str(x) + str(y)
@@ -506,6 +546,10 @@ def titlescreen():
 
     #start title music
     #sounds[0].play(loops=-1)
+
+    #default background color
+    global bgcolor
+    bgcolor = "white"
     
     #title screen easter egg
     easter = 1
@@ -533,6 +577,7 @@ def titlescreen():
                     if (easter == 0):
                         sounds[1].stop()
                         #sounds[0].play(loops=-1)
+                        bgcolor = "white"
                         
                         img = PhotoImage(file="gamefiles/titleNormal.png")
                         title_label = Label(title, image=img, background="black")
@@ -547,6 +592,7 @@ def titlescreen():
                     elif (easter == 1):
                         sounds[0].stop()
                         #sounds[1].play(loops=-1)
+                        bgcolor = "black"
 
                         img = PhotoImage(file="gamefiles/titleEaster.png")
                         title_label = Label(title, image=img, background="black")
@@ -605,11 +651,20 @@ def gameloop():
     global p2boat3
     global p2boat4
     global p2boat5
-
+    global boat1score
+    global boat2score
+    global boat3score
+    global boat4score
+    global boat5score
 
     #scores start at 0
     totalScore = 0
     p2totalScore = 0
+    boat1score = 0
+    boat2score = 0
+    boat3score = 0
+    boat4score = 0
+    boat5score = 0
 
     #player 2 - goes second
     myTurn = 0
@@ -996,14 +1051,17 @@ def gameloop():
             window.update()
 
             GPIO.output(senders[0], 0)
-            if (myTurn == 0):
-                b1.displayText("Waiting for Player 1...")
 
             #once 5 ships are placed, move on to gameplay
             if (shipCount == 5):
                 #print(squareStatus) # - to test if the ships are stored in right locations
                 #print(shipPresence) # - ditto
                 break
+
+            if (myTurn == 0):
+                b1.displayText("Waiting for Player 1...")
+
+    b1.displayText("Loading...")
 
     #exchange ship data with other player (sender)
     GPIO.output(senders[1], 0)
@@ -1198,6 +1256,8 @@ def gameloop():
 
     GPIO.output(senders[1], 0)
     GPIO.output(senders[2], 0)
+
+    b1.displayText("Waiting for Player 1...")
 
     
     """
@@ -1394,6 +1454,10 @@ def gameloop():
                                         GPIO.output(senders[2], 0)
                                         break
 
+                        #see if you sunk a battleship
+                        location = str(currentx) + str(currenty)
+                        b1.boatCheck(location)
+
                         print("Data sent.")
                         #move on from the data transfer
                         GPIO.output(senders[0], 1)
@@ -1484,7 +1548,8 @@ def gameloop():
 ###MAIN CODE###
 
 #initialize the mixer and pygame
-pygame.mixer.pre_init(frequency=44100, size=-16, channels=1, buffer=512)
+pygame.mixer.pre_init(frequency=44100, size=-16, channels=1, buffer=1024)
+pygame.mixer.init()
 pygame.init()
 
             
