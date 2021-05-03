@@ -397,31 +397,31 @@ class Game(Frame):
         if (p2boat1[location] == 1):
             boat1score += 1
             if (boat1score == 3):
-                sleep(1.5)
+                sleep(3.5)
                 sounds[11].play()
 
         elif (p2boat2[location] == 1):
             boat2score += 1
             if (boat2score == 3):
-                sleep(1.5)
+                sleep(3.5)
                 sounds[11].play()
 
         elif (p2boat3[location] == 1):
             boat3score += 1
             if (boat3score == 3):
-                sleep(1.5)
+                sleep(3.5)
                 sounds[11].play()
 
         elif (p2boat4[location] == 1):
             boat4score += 1
             if (boat4score == 3):
-                sleep(1.5)
+                sleep(3.5)
                 sounds[11].play()
 
         elif (p2boat5[location] == 1):
             boat5score += 1
             if (boat5score == 3):
-                sleep(1.5)
+                sleep(3.5)
                 sounds[11].play()
 
         sleep(1)
@@ -434,7 +434,8 @@ class Game(Frame):
 
         if (p2shipPresence[location] == 0): #MISS
             sounds[9].play()
-            sleep(3.75)
+            sendAttack()
+            sleep(1.8)
             squareStatus[location] = "greenmiss"
             img = PhotoImage(file="gamefiles/greenmiss.gif")
             self.label = Label(self, image=img, background="black")
@@ -446,7 +447,8 @@ class Game(Frame):
             global totalScore
             totalScore += 1
             sounds[8].play()
-            sleep(3.75)
+            sendAttack()
+            sleep(1.8)
             squareStatus[location] = "greenhit"
             img = PhotoImage(file="gamefiles/greenhit.gif")
             self.label = Label(self, image=img, background="black")
@@ -523,8 +525,39 @@ class Game(Frame):
 
         self.update_idletasks()
         self.update()
-                    
-    
+
+#send data set of where you fired to other player                
+def sendAttack():
+    print("Now sending data...")
+    for x in range(1, 9):
+        for y in range(1, 9):
+            
+            location = str(x) + str(y)
+            print(location)
+            
+            while True: 
+                if (GPIO.input(receivers[1]) == False):
+                    break
+            print("Receiver off")
+            
+            if (shotsTaken[location] == 0): #you haven't shot there
+                GPIO.output(senders[1], 1)
+                GPIO.output(senders[2], 0)
+            elif (shotsTaken[location] == 1): #you've shot there
+                GPIO.output(senders[1], 0)
+                GPIO.output(senders[2], 1)
+
+            while True:
+                if (GPIO.input(receivers[1]) == True):
+                    GPIO.output(senders[1], 0)
+                    GPIO.output(senders[2], 0)
+                    break
+
+    print("Data sent.")
+    #move on from the data transfer
+    GPIO.output(senders[0], 1)
+    sleep(0.5)
+    GPIO.output(senders[0], 0)
 
         
 def titlescreen():
@@ -1079,7 +1112,7 @@ def gameloop():
 
             #not part of data transfer, only to update screen to say loading...
             if (loadingBool == 0):
-                b1.displayText("Loading...")
+                b1.displayText("Loading the missiles...")
                 loadingBool = 1
 
             if (shipPresence[myLocation] == 0): #you have no ship
@@ -1281,7 +1314,7 @@ def gameloop():
             if (myTurn == 1):
                 break
             
-            #receive data set to see where other player fired###########################
+            #receive data set to see where other player fired
             for x in range(10, 18):
                 for y in range(1, 9):
                     location = str(x) + str(y)
@@ -1306,7 +1339,7 @@ def gameloop():
                             gameloop()
                         
                     GPIO.output(senders[1], 1)
-                    sleep(0.02)
+                    sleep(0.01)
                     
             print("Got out")
             
@@ -1317,16 +1350,15 @@ def gameloop():
                     GPIO.output(senders[2], 0)
                     break
 
+            sleep(2.3)
             b1.updateShips(p2shotsTaken)
 
             print()
             print("Their shots:")
             print(p2shotsTaken)
             print("Data received")
-            #sleep(3)
-            myTurn = 1
-############################################################################################
-            
+            sleep(3.3)
+            myTurn = 1            
             
             #blue escape button
             if (GPIO.input(buttons[0]) == True):
@@ -1346,7 +1378,7 @@ def gameloop():
             break
 
         if (p2totalScore == 15):
-            sleep(1)
+            sleep(2.1)
             b1.displayText("YOU LOSE")
             sounds[10].stop()
             sounds[2].play(loops=-1)
@@ -1378,7 +1410,7 @@ def gameloop():
                     window.destroy()
                     gameloop()
 
-                #red fire button###############################################################
+                #red fire button
                 if (GPIO.input(buttons[1]) == True):
                     location = str(currentx) + str(currenty)
                     
@@ -1387,50 +1419,16 @@ def gameloop():
                     else:
                         b1.fire(currentx, currenty)
 
-                        #send data set of where you fired to other player
-                        print("Now sending data...")
-                        for x in range(1, 9):
-                            for y in range(1, 9):
-                                
-                                location = str(x) + str(y)
-                                print(location)
-                                
-                                while True: 
-                                    if (GPIO.input(receivers[1]) == False):
-                                        break
-                                print("Receiver off")
-                                
-                                if (shotsTaken[location] == 0): #you haven't shot there
-                                    GPIO.output(senders[1], 1)
-                                    GPIO.output(senders[2], 0)
-                                elif (shotsTaken[location] == 1): #you've shot there
-                                    GPIO.output(senders[1], 0)
-                                    GPIO.output(senders[2], 1)
-
-                                while True:
-                                    if (GPIO.input(receivers[1]) == True):
-                                        GPIO.output(senders[1], 0)
-                                        GPIO.output(senders[2], 0)
-                                        break
-
                         #see if you sunk a battleship
                         location = str(currentx) + str(currenty)
                         b1.boatCheck(location)
-                        
-                        print("Data sent.")
-                        #move on from the data transfer
-                        GPIO.output(senders[0], 1)
-                        sleep(0.5)
-                        GPIO.output(senders[0], 0)
-                        
 
                         print()
                         print("My shots:")
                         print(shotsTaken)
                         
                         pressed = True
-                        myTurn = 0
-#############################################################################################                
+                        myTurn = 0               
 
             if (direction == 3): #UP
                 if (currenty != 1):
@@ -1479,7 +1477,7 @@ def gameloop():
                 break
 
             if (p2totalScore == 15):
-                sleep(1)
+                sleep(2.1)
                 b1.displayText("YOU LOSE")
                 sounds[10].stop()
                 sounds[2].play(loops=-1)
