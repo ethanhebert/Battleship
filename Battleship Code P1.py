@@ -1,3 +1,11 @@
+#############################################################
+# Names: Ethan Hebert & Jace Peloquin
+# Date: 5-11-21
+# Description: This code is the Player 1 component of a
+# video game recreation of the famous Battleship boardgame.
+# Louisiana Tech CSC-132 Final Project.
+#############################################################
+
 #here we go
 #PLAYER 1
 
