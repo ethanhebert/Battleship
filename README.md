@@ -11,6 +11,6 @@ The Bill of Materials includes all hardware, supplies, and software used to crea
 Also included are .dxf files for the laser cut box and a .stl file for the speaker grills.
 
 The remaining files test individual code components or show project descriptions
-at various phases in the design process.
+at various phases in the design process. They are not necessary to run the game.
 
 
