@@ -1,3 +1,7 @@
+# Battleship
+
+<img src="https://user-images.githubusercontent.com/80844614/222574932-b710fedb-c02b-43ef-a240-529a8f9a19c5.png"  width="600">
+
 Ethan Hebert & Jace Peloquin
 
 2-Player Battleship Game.
@@ -12,5 +16,3 @@ Also included are .dxf files for the laser cut box and a .stl file for the speak
 
 The remaining files test individual code components or show project descriptions
 at various phases in the design process. They are not necessary to run the game.
-
-
