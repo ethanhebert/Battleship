@@ -1,11 +1,11 @@
 # Battleship
+<h3>
+Ethan Hebert & Jace Peloquin <br>
+2-Player Battleship Game <br>
+Made for CSC-132 Final Project @ Louisiana Tech
+</h3>
 
-<img src="https://user-images.githubusercontent.com/80844614/222574932-b710fedb-c02b-43ef-a240-529a8f9a19c5.png"  width="600">
-
-Ethan Hebert & Jace Peloquin
-
-2-Player Battleship Game.
-Made for CSC-132 Final Project @ Louisiana Tech.
+<img src="https://user-images.githubusercontent.com/80844614/222575585-91f8fd6d-c8b1-4f99-ae26-325377bf7045.png"  width="400">
 
 All source code is contained in Battleship Code P1 (Player 1) and Battleship Code P2 (Player 2).
 All game images and sounds are in the gamefiles folder.
